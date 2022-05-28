@@ -70,8 +70,7 @@ reset_button.pack(
     expand=True
 )
 
-# reset_button.place(x=110, y=130)
-reset_button.grid(column=2, row=3)
+reset_button.place(x=110, y=130)
 
 print(count_high)
 root.mainloop()
