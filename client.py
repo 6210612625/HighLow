@@ -40,7 +40,9 @@ def lost(player):
 
 def send_ans(output):
     output = str(output)
+    print("send :",output)
     output = output.encode()
+    
     s.send(output)
     
 def check(sum_ans):    
@@ -59,7 +61,7 @@ def check(sum_ans):
             #check p1 is correct answer -> win(player)
             if sum_ans > 9:
                 if(count_high == True):
-                    #send_ans("correct")
+                    send_ans("correct")
                     messagebox.showinfo(title="Congratulation client", message='correct! answer is '+ ans)
                     
                     correct = True
@@ -71,7 +73,7 @@ def check(sum_ans):
                     count_low = False
             else:
                 if(count_low == True):
-                    #send_ans("correct")
+                    send_ans("correct")
                     messagebox.showinfo(title="Congratulation client", message='correct! answer is '+ ans)
                     correct = True
                     count_low = False
@@ -83,6 +85,7 @@ def check(sum_ans):
             send_ans("draw")
             draw()
         #hideme()
+        send_ans("correct")
         
         #check p1 is uncorrect answer -> lost(player)
         #if rounds = 3 -> draw()
@@ -133,8 +136,8 @@ s.connect(('127.0.0.1', 7077))
 #cมี server คนเดียวเลยไม่ต้องระบุ 
 def receive_message():
     while True:
-        messgae = s.recv(1024)
-        apply(messgae)
+        p = s.recv(10)
+        apply(p)
         
 def apply(input):
     input = input.decode()

@@ -62,7 +62,7 @@ def check():
     if(count_high == False and count_low == False):
         pass
     else:
-        if(rounds <5):
+        if(rounds <4):
             #check p1 is correct answer -> win(player)
             if sum_ans > 9:
                 if(count_high == True):
@@ -122,15 +122,15 @@ def restart():
     global count_low
     global count_high
     rounds = 1
-    rnd = str(rounds)
+    rnd = str(rounds)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
     label_round.config(text = "ROUND : " + rnd)
     count_high =False
     count_low =False
-    
-    start_button.configure(state=NORMAL)
-    s.close()
-    handle_client()
     startgame()
+    start_button.configure(state=NORMAL)
+    #s.close()
+    handle_client()
+    
     
      
     
@@ -155,6 +155,7 @@ def send_round(rou):
     
 def send_random(guess):
     guess = str(guess)
+    print("send guess number:",guess)
     guess = guess.encode()
     conn.send(guess)
     
@@ -164,25 +165,32 @@ def send_ans(output):
     conn.send(output)
     
      
-def receive_message(message):
+def receive_message(c):
     while True:
-        message = message.recv(1024) 
-        receive_ans(message)
+        p = c.recv(10) #ขนาดข้อมูล 10
+        receive_ans(p)
+        
         
 def receive_ans(output):
     output = output.decode()
+    print("receive : ",output)
     output = str(output)
     handle(output)
 
     
 conn = None
 def handle_client():
-    global player
-    global conn
-    player = 2
-    conn, ad = s.accept()
-    receive_thread = Thread(target = receive_message, args = [conn,])
-    receive_thread.start()
+    while True:
+        try:        
+            global player
+            global conn
+            player = 1
+            conn, ad = s.accept()
+            print("player connected")
+            receive = Thread(target = receive_message, args = [conn,])
+            receive.start()
+        except: 
+            pass
     
 
 
