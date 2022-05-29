@@ -20,7 +20,7 @@ BUFFER_SIZE = 1024
 s.bind(('127.0.0.1', 7077)) #การกำหนดค่าต่างๆที่จำเป้นให้กับ socket object
 s.listen(5)
 
-
+                       
 
 end_game = False
 player=2
@@ -29,7 +29,7 @@ count_high = False
 count_low = False
 
 stb = True
-rounds = 0
+rounds = 1
 sum_ans = 0
 
          
@@ -107,18 +107,19 @@ def startgame():
         
         
         
-        rounds+=1
+        
         mylabel.config(text = sum_ans)
         rnd = str(rounds)
         label_round.config(text = "ROUND : " + rnd)
+    rounds+=1
     start_button.configure(state=DISABLED)
     send_random(sum_ans)
-    
+    send_round("ROUND : " + rnd)
 def restart():
     global rounds
     global count_low
     global count_high
-    rounds = 0
+    rounds = 1
     count_high =False
     count_low =False
     startgame()
@@ -137,6 +138,11 @@ def handle(type):
         draw()
     else:
         pass
+
+def send_round(rou):
+    rou = str(rou)
+    rou = rou.encode()
+    conn.send(rou)
     
 def send_random(guess):
     guess = str(guess)

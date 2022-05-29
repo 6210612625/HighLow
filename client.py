@@ -80,15 +80,28 @@ def check(sum_ans):
         else:
             send_ans("draw")
             draw()
-        rounds+=1
+        
         
         #check p1 is uncorrect answer -> lost(player)
         #if rounds = 3 -> draw()
 def handle(type):
+    global rounds
     if(type == "lost"):
         win(player)
     elif(type == 'draw'):
         draw()
+    elif(type == 'ROUND : 1'):
+        rounds = 1
+        rnd = str(rounds)
+        label_round.config(text = "ROUND : " + rnd)
+    elif(type == 'ROUND : 2'):
+        rounds = 2
+        rnd = str(rounds)
+        label_round.config(text = "ROUND : " + rnd)
+    elif(type == 'ROUND : 3'):
+        rounds = 3
+        rnd = str(rounds)
+        label_round.config(text = "ROUND : " + rnd)
     else:
         pass
     
@@ -161,7 +174,7 @@ label = tkinter.Label(root, text =( "hi" ), font=("Arial", 20),
 
     
 
-label_round = tk.Label(root, text = "ROUND : 1", bg = "red")
+label_round = tk.Label(root, text = "ROUND : 0", bg = "red")
 label_round.pack(padx = 5, pady = 10)
 mylabel = tk.Label(root, text = "Hello World", bg = "red")
 mylabel.pack(padx = 5, pady = 10)
@@ -216,8 +229,6 @@ def High():
     count_low = False
     global sum_ans
     global rounds
-    rnd = str(rounds)
-    label_round.config(text = "ROUND : " + rnd)
     check(sum_ans)
 
 
@@ -227,8 +238,6 @@ def Low():
     global count_high
     count_high = False
     global sum_ans
-    rnd = str(rounds)
-    label_round.config(text = "ROUND : " + rnd)
     check(sum_ans)
 
 
