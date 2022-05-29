@@ -62,7 +62,7 @@ def check():
     if(count_high == False and count_low == False):
         pass
     else:
-        if(rounds <=3):
+        if(rounds <5):
             #check p1 is correct answer -> win(player)
             if sum_ans > 9:
                 if(count_high == True):
@@ -113,18 +113,25 @@ def startgame():
         label_round.config(text = "ROUND : " + rnd)
     rounds+=1
     start_button.configure(state=DISABLED)
+    #hideme()
     send_random(sum_ans)
     send_round("ROUND : " + rnd)
+    
 def restart():
     global rounds
     global count_low
     global count_high
     rounds = 1
+    rnd = str(rounds)
+    label_round.config(text = "ROUND : " + rnd)
     count_high =False
     count_low =False
-    startgame()
+    
+    start_button.configure(state=NORMAL)
     s.close()
     handle_client()
+    startgame()
+    
      
     
             
@@ -136,6 +143,8 @@ def handle(type):
         win(player)
     elif(type == 'draw'):
         draw()
+    elif(type == 'correct'):
+        showme()
     else:
         pass
 
@@ -157,7 +166,7 @@ def send_ans(output):
      
 def receive_message(message):
     while True:
-        message = message.recv(10) 
+        message = message.recv(1024) 
         receive_ans(message)
         
 def receive_ans(output):
@@ -230,6 +239,13 @@ def hide_me(event):
     #event.widget.pack_forget()
     #event.config
     start_button.configure(state=DISABLED)
+
+def showme():
+    high_button.configure(state=NORMAL)
+    low_button.configure(state=NORMAL)
+def hideme():
+    high_button.configure(state=DISABLED)
+    low_button.configure(state=DISABLED)
     
 # high button
 high_button = ttk.Button(

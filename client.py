@@ -59,17 +59,19 @@ def check(sum_ans):
             #check p1 is correct answer -> win(player)
             if sum_ans > 9:
                 if(count_high == True):
-                    
+                    #send_ans("correct")
                     messagebox.showinfo(title="Congratulation client", message='correct! answer is '+ ans)
                     
                     correct = True
                     count_high = False
+                    
                 else:
                     send_ans("lost")
                     lost(player)
                     count_low = False
             else:
                 if(count_low == True):
+                    #send_ans("correct")
                     messagebox.showinfo(title="Congratulation client", message='correct! answer is '+ ans)
                     correct = True
                     count_low = False
@@ -80,7 +82,7 @@ def check(sum_ans):
         else:
             send_ans("draw")
             draw()
-        
+        #hideme()
         
         #check p1 is uncorrect answer -> lost(player)
         #if rounds = 3 -> draw()
@@ -109,6 +111,7 @@ def handle_ran(ans):
     global sum_ans
     ans = int(ans)
     sum_ans = ans
+    #showme()
     check(sum_ans)
     
     
@@ -116,7 +119,9 @@ def restart():
     global rounds
     global count_low
     global count_high
-    rounds = 0
+    rounds = 1
+    rnd = str(rounds)
+    label_round.config(text = "ROUND : " + rnd)
     count_high =False
     count_low =False
 
@@ -128,7 +133,7 @@ s.connect(('127.0.0.1', 7077))
 #cมี server คนเดียวเลยไม่ต้องระบุ 
 def receive_message():
     while True:
-        messgae = s.recv(10)
+        messgae = s.recv(1024)
         apply(messgae)
         
 def apply(input):
@@ -189,13 +194,19 @@ img = PhotoImage(file="dices.png")
 label_img = Label(root, image=img,bg = "LightPink")
 label_img.pack(padx=10,pady=10)
 
-
+def showme():
+    high_button.configure(state=NORMAL)
+    low_button.configure(state=NORMAL)
+def hideme():
+    high_button.configure(state=DISABLED)
+    low_button.configure(state=DISABLED)
     
 # high button
 high_button = ttk.Button(
     root,
     text='HIGH',
-    command=lambda: High()
+    command=lambda: High(),
+    #state=DISABLED
     
 )
 
@@ -203,7 +214,8 @@ high_button = ttk.Button(
 low_button = ttk.Button(
     root,
     text='LOW',
-    command=lambda: Low()
+    command=lambda: Low(),
+    #state=DISABLED
 )
 
 # setting botton
