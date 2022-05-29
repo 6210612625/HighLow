@@ -23,7 +23,7 @@ s.listen(5)
 
 
 end_game = False
-player=1
+player=2
 
 count_high = False
 count_low = False
@@ -36,7 +36,8 @@ sum_ans = 0
 correct = False
 
 def win(player):
-    messagebox.showinfo(title="Congratulation", message='Congratulation winner is ' + player)
+    player = str(player)
+    messagebox.showinfo(title="Congratulation server", message='Congratulation winner is ' + player)
     restart()
 
 
@@ -46,7 +47,8 @@ def draw():
 
 
 def lost(player):
-    messagebox.showinfo(title="Nice Try!", message='You lost, see you again next time!')
+    player = str(player)
+    messagebox.showinfo(title="Nice Try! server", message='You lost, see you again next time!')
     restart()
 
 def check():    
@@ -54,6 +56,8 @@ def check():
     global end_game
     global correct
     ans = str(sum_ans)
+    global count_high
+    global count_low
     #c.send(ans.encode())
     if(count_high == False and count_low == False):
         pass
@@ -63,81 +67,32 @@ def check():
             if sum_ans > 9:
                 if(count_high == True):
                     
-                    messagebox.showinfo(title="Congratulation", message='correct! answer is '+ ans)
+                    messagebox.showinfo(title="Congratulation server", message='correct! answer is '+ ans)
                     startgame()
                     correct = True
+                    
+                    count_high = False
                 else:
-                    #send_ans("lost")
+                    send_ans("lost")
                     lost(player)
-                    
-                    
-                    
+                    count_low = False
             else:
                 if(count_low == True):
-                    messagebox.showinfo(title="Congratulation", message='correct! answer is '+ ans)
+                    messagebox.showinfo(title="Congratulation server", message='correct! answer is '+ ans)
                     startgame()
                     correct = True
+                    count_low = False
                 else:
-                    #send_ans("lost")
+                    send_ans("lost")
                     lost(player)
+                    count_high = False
                     
                     
         else:
-            #send_ans("draw")
+            send_ans("draw")
             draw()
         
         
-            
-    
-            
-            
-        #check p1 is uncorrect answer -> lost(player)
-        #if rounds = 3 -> draw()
-def handle(type):
-    if(type == "lost"):
-        win(player)
-    elif(type == 'draw'):
-        draw()
-    else:
-        pass
-    
-""" def send_random(guess):
-    guess = str(guess)
-    guess = guess.encode()
-    conn.send(guess)
-    
-def send_ans(output):
-    output = str(output)
-    output = output.encode()
-    conn.send(output)
-    
-     
-def receive_message(c):
-    while True:
-        p = c.recv(10) #ขนาดข้อมูล 10
-        receive_ans(p)
-        
-def receive_ans(output):
-    output = output.decode()
-    output = str(output)
-    handle(output)
-
-    
-conn = None
-def handle_client():
-    global player
-    global conn
-    player = 1
-    conn, ad = s.accept()
-    receive = Thread(target = receive_message, args = [conn,])
-    receive.start()
-    
-
-
-acc = Thread(target=handle_client)
-acc.start() """
-
-
 def startgame():
     global rounds
     if (rounds <= 3):
@@ -157,6 +112,70 @@ def startgame():
         rnd = str(rounds)
         label_round.config(text = "ROUND : " + rnd)
     start_button.configure(state=DISABLED)
+    send_random(sum_ans)
+    
+def restart():
+    global rounds
+    global count_low
+    global count_high
+    rounds = 0
+    count_high =False
+    count_low =False
+    startgame()
+    s.close()
+    handle_client()
+     
+    
+            
+            
+        #check p1 is uncorrect answer -> lost(player)
+        #if rounds = 3 -> draw()
+def handle(type):
+    if(type == "lost"):
+        win(player)
+    elif(type == 'draw'):
+        draw()
+    else:
+        pass
+    
+def send_random(guess):
+    guess = str(guess)
+    guess = guess.encode()
+    conn.send(guess)
+    
+def send_ans(output):
+    output = str(output)
+    output = output.encode()
+    conn.send(output)
+    
+     
+def receive_message(message):
+    while True:
+        message = message.recv(10) 
+        receive_ans(message)
+        
+def receive_ans(output):
+    output = output.decode()
+    output = str(output)
+    handle(output)
+
+    
+conn = None
+def handle_client():
+    global player
+    global conn
+    player = 2
+    conn, ad = s.accept()
+    receive_thread = Thread(target = receive_message, args = [conn,])
+    receive_thread.start()
+    
+
+
+handle_thread = Thread(target=handle_client)
+handle_thread.start()
+
+
+
     
 
     
@@ -171,7 +190,7 @@ root = tk.Tk()
 #root.geometry('420x390')
 root.geometry('1000x1000')
 root.resizable(False, False)
-root.title('HIGH-LOW')
+root.title('HIGH-LOW server side')
 root.configure(bg = "LightPink")
 
 global my_label
@@ -278,16 +297,7 @@ def Low():
     count_high = False
     check()
 
-def restart():
-    global rounds
-    global count_low
-    global count_high
-    rounds = 0
-    count_high =False
-    count_low =False
-    startgame()
-    #s.close()
-    #handle_client()
+
 
 
 
