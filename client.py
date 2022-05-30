@@ -1,27 +1,21 @@
 from socket import *
 from tkinter import *
 import tkinter
-import random
 from tkinter import messagebox
 from threading import Thread
 import tkinter as tk
 from tkinter import LEFT, RIGHT, ttk
-from turtle import left, right
 from PIL import Image, ImageTk
 import sys
 import tkinter.font as tkFont
 
-
-
-end_game = False
 player = 1
 
 count_high = False
 count_low = False
 
-stb = True
 rounds = 1
-sum_ans = 0
+sum_ans = 3
 
 
 def win(player):
@@ -40,10 +34,10 @@ def lost(player):
     messagebox.showinfo(title="Nice Try! client", message='You lost, see you again next time!' )
     restart()
 
-    
+#check p1 is uncorrect answer -> lost(player)
+#if rounds = 3 -> draw()
 def check(sum_ans):    
     global rounds
-    global end_game
     global correct
     global count_high
     global count_low
@@ -81,11 +75,9 @@ def check(sum_ans):
                     count_high = False
         else:
             send_ans("draw")
-            draw()
+            draw()       
         
-        
-        #check p1 is uncorrect answer -> lost(player)
-        #if rounds = 3 -> draw()
+
 def handle(type):
     global rounds
     if(type == "lost"):
@@ -108,7 +100,8 @@ def handle(type):
         label_round.config(text = "ROUND : " + rnd)
     else:
         pass
-    
+
+
 def handle_ran(ans):
     global sum_ans
     ans = int(ans)
@@ -171,15 +164,9 @@ def incheck(inn):
         handle(inn)
 
 
-    
-
 receive = Thread(target=receive_message)
 receive.start()
 
-
-#def quit():
- #   s.close()
-  #  wind.destroy()
 
 # root window
 root = tk.Tk()
@@ -198,9 +185,6 @@ label_round.pack(padx = 20, pady = 20)
 label_round.place(relx = 1.0, rely = 0.0, anchor ='ne')
 
 fontExample = tkFont.Font(family="Impact", size=23, weight="bold")
-
-'''label = tkinter.Label(root, text = "\n  HIGH-LOW GAME! \'''n", font=("Arial", 20), 
-            bg = "LightPink", fg = "deep pink").pack()'''
 
 label = tkinter.Label(root, text =( "\nPLAYER 1\n\n" ), font=(fontExample), 
             bg = "LightPink", fg = "black").pack()
@@ -239,8 +223,7 @@ high_button = ttk.Button(
     root,
     text='HIGH',
     command=lambda: High(),
-    state=DISABLED
-    
+    state=DISABLED 
 )
 
 # low button
@@ -257,7 +240,6 @@ high_button.pack(
     ipady=5,
     side=LEFT,
     expand=True,
-    
 )
 
 low_button.pack(
@@ -286,22 +268,5 @@ def Low():
     check(sum_ans)
 
 
-""" def receive_ans(output):
-    output = output.decode()
-    output = int(output)
-    handle(output)
-    
-def receive_ran(output):
-    output = output.decode()
-    output = str(output)
-    handle_ran(output) """
-
-
-
 root.mainloop()
     
-
-
-    
-    
-
