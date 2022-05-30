@@ -8,6 +8,7 @@ import tkinter as tk
 from tkinter import LEFT, RIGHT, ttk
 from turtle import left, right
 from PIL import Image, ImageTk
+import sys
 
 end_game = False
 player = 1
@@ -36,12 +37,6 @@ def lost(player):
     messagebox.showinfo(title="Nice Try! client", message='player '+player+' is lost, see you again next time!' )
     restart()
 
-def send_ans(output):
-    output = str(output)
-    print("send :",output)
-    output = output.encode()
-    
-    s.send(output)
     
 def check(sum_ans):    
     global rounds
@@ -139,7 +134,22 @@ s.connect(('127.0.0.1', 7077))
 def receive_message():
     while True:
         p = s.recv(10)
-        apply(p)
+        if p.decode() != "":
+            apply(p)
+        else:
+            print("connection close")
+            s.close()
+            break
+    print("close socket")
+    sys.exit()
+
+
+def send_ans(output):
+    output = str(output)
+    print("send :",output)
+    output = output.encode()
+    
+    s.send(output)
         
 def apply(input):
     input = input.decode()
@@ -191,7 +201,7 @@ label = tkinter.Label(root, text =( "PLAYER 1" ), font=("Arial", 17),
 
 
 #IMG
-dicesImg = Image.open(r"dices.png").resize((100, 100))
+dicesImg = Image.open(r"dices1.png").resize((100, 100))
 
 #img = PhotoImage(file="dices.png")      
 

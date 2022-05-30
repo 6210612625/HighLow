@@ -11,6 +11,7 @@ from tkinter import LEFT, RIGHT, ttk
 from turtle import left, right
 from PIL import Image, ImageTk
 import time
+import sys
 
 
 
@@ -20,7 +21,8 @@ s.setsockopt(SOL_SOCKET,SO_REUSEADDR,1) #`reuse addr ป้องกันerror 
 BUFFER_SIZE = 1024
 
 s.bind(('127.0.0.1', 7077)) #การกำหนดค่าต่างๆที่จำเป้นให้กับ socket object
-s.listen(5)
+s.settimeout(30)
+s.listen(1)
 
                        
 
@@ -133,7 +135,7 @@ def startgame():
         
         
         
-        mylabel.config(text = sum_ans)
+        #mylabel.config(text = sum_ans)
         rnd = str(rounds)
         label_round.config(text = "ROUND : " + rnd)
     rounds+=1
@@ -157,6 +159,7 @@ def restart():
     send_ans('restart')
     #startgame()
     start_button.configure(state=NORMAL)
+    hideme()
     #s.close()
     #handle_client()
     
@@ -195,10 +198,10 @@ def send_ans(output):
     conn.send(output)
     
      
-def receive_message(c):
+""" def receive_message(c):
     while True:
         p = c.recv(10) #ขนาดข้อมูล 10
-        receive_ans(p)
+        receive_ans(p) """
         
         
 def receive_ans(output):
@@ -210,16 +213,21 @@ def receive_ans(output):
     
 conn = None
 def handle_client():
-   
-    try:        
-        global player
-        global conn
-        conn, ad = s.accept()
-        print("player connected")
-        receive = Thread(target = receive_message, args = [conn,])
-        receive.start()
-    except: 
-        pass
+    global player
+    global conn
+    conn, ad = s.accept()
+    while True:
+        try:        
+            print("player connected")
+            p = conn.recv(10)
+            receive_ans(p)
+            #receive = Thread(target = receive_message, args = [conn,])
+            #receive.start()
+        except: 
+            print("close socket & thread")
+            conn.close
+            break
+    sys.exit()
     
 
 
@@ -251,25 +259,29 @@ label_round = tk.Label(root, text = "ROUND:    ", bg = "Lightpink", font=('Arial
 label_round.pack(padx = 20, pady = 20)
 label_round.place(relx = 1.0, rely = 0.0, anchor ='ne')
 
-label = tkinter.Label(root, text = "\n  HIGH-LOW GAME! \n", font=("Arial", 20), 
-            bg = "LightPink", fg = "deep pink").pack()
+import tkinter.font as tkFont
+fontExample = tkFont.Font(family="Impact", size=20, weight="bold")
 
-label = tkinter.Label(root, text =( "PLAYER 2" ), font=("Arial", 17), 
+
+""" label = tkinter.Label(root, text = "\n  HIGH-LOW GAME! \n", font=(fontExample), 
             bg = "LightPink", fg = "deep pink").pack()
+ """
+label = tkinter.Label(root, text =( "PLAYER 2" ), font=(fontExample), 
+            bg = "LightPink", fg = "black").pack()
 
     
 
 #label_round = tk.Label(root, text = "Hello World", bg = "red")
 #label_round.pack(padx = 5, pady = 10)
-mylabel = tk.Label(root, text = "Hello World", bg = "red")
-mylabel.pack(padx = 5, pady = 10)
+""" mylabel = tk.Label(root, text = "Hello World", bg = "red")
+mylabel.pack(padx = 5, pady = 10) """
 
 
 
 #mybutton = tk.Button(root, text = "Click Me", command = startgame)
 #mybutton.pack(padx = 5, pady = 10)
 #IMG
-dicesImg = Image.open(r"dices.png").resize((100, 100))
+dicesImg = Image.open(r"dices1.png").resize((100, 100))
 
 #img = PhotoImage(file="dices.png")      
 
@@ -282,6 +294,19 @@ img = ImageTk.PhotoImage(resize_image)
 label1 = Label(image=img, bg='Lightpink')
 label1.image = img
 label1.pack()
+
+
+dicesImg = Image.open(r"name1.png").resize((500, 500))
+resize_image = dicesImg.resize((360, 80), Image.ANTIALIAS)
+ 
+img = ImageTk.PhotoImage(resize_image)
+
+label1 = Label(image=img, bg='Lightpink')
+label1.image = img
+label1.pack()
+
+
+
 
 #def เพื่อให้ปุ่มหาย
 def hide_me(event):
