@@ -9,6 +9,9 @@ from tkinter import LEFT, RIGHT, ttk
 from turtle import left, right
 from PIL import Image, ImageTk
 import sys
+import tkinter.font as tkFont
+
+
 
 end_game = False
 player = 1
@@ -23,7 +26,7 @@ sum_ans = 0
 
 def win(player):
     player = str(player)
-    messagebox.showinfo(title="Congratulation client", message='Congratulation winner is player' + player)
+    messagebox.showinfo(title="Congratulation client", message='Congratulation, the winner is player ' + player)
     restart()
 
 
@@ -34,7 +37,7 @@ def draw():
 
 def lost(player):
     player = str(player)
-    messagebox.showinfo(title="Nice Try! client", message='player '+player+' is lost, see you again next time!' )
+    messagebox.showinfo(title="Nice Try! client", message='You lost, see you again next time!' )
     restart()
 
     
@@ -129,7 +132,7 @@ def restart():
 s = socket(AF_INET,SOCK_STREAM)
 BUFFER_SIZE = 1024
 
-s.connect(('127.0.0.1', 7077))
+s.connect(('127.0.0.1', 7017))
 #cมี server คนเดียวเลยไม่ต้องระบุ 
 def receive_message():
     while True:
@@ -180,7 +183,6 @@ receive.start()
 
 # root window
 root = tk.Tk()
-#root.geometry('420x390')
 root.geometry('600x600')
 root.resizable(False, False)
 root.title('HIGH-LOW client side')
@@ -188,25 +190,24 @@ root.configure(bg = "LightPink")
 
 global my_label
 global label_round
-label_round = tk.Label(root, text = "ROUND:    ", bg = "Lightpink", font=('Arial', 13))
+
+fontExample1 = tkFont.Font(family="Impact", size=15)
+
+label_round = tk.Label(root, text = "ROUND:    ", bg = "Lightpink", font=(fontExample1))
 label_round.pack(padx = 20, pady = 20)
 label_round.place(relx = 1.0, rely = 0.0, anchor ='ne')
 
-label = tkinter.Label(root, text = "\n  HIGH-LOW GAME! \n", font=("Arial", 20), 
-            bg = "LightPink", fg = "deep pink").pack()
+fontExample = tkFont.Font(family="Impact", size=23, weight="bold")
 
-label = tkinter.Label(root, text =( "PLAYER 1" ), font=("Arial", 17), 
-            bg = "LightPink", fg = "deep pink").pack()
+'''label = tkinter.Label(root, text = "\n  HIGH-LOW GAME! \'''n", font=("Arial", 20), 
+            bg = "LightPink", fg = "deep pink").pack()'''
+
+label = tkinter.Label(root, text =( "\nPLAYER 1\n\n" ), font=(fontExample), 
+            bg = "LightPink", fg = "black").pack()
 
 
-
-#IMG
-dicesImg = Image.open(r"dices1.png").resize((100, 100))
-
-#img = PhotoImage(file="dices.png")      
-
-#label_img = Label(root, image=img,bg = "LightPink")
-#label_img.pack(padx=10,pady=10)
+#IMG dice
+dicesImg = Image.open(r"dices1.png").resize((500, 500))
 resize_image = dicesImg.resize((173, 144), Image.ANTIALIAS)
  
 img = ImageTk.PhotoImage(resize_image)
@@ -215,6 +216,16 @@ label1 = Label(image=img, bg='Lightpink')
 label1.image = img
 label1.pack()
 
+#IMG high low
+dicesImg = Image.open(r"name1.png").resize((500, 500))
+
+resize_image = dicesImg.resize((360, 80), Image.ANTIALIAS)
+ 
+img = ImageTk.PhotoImage(resize_image)
+
+label1 = Label(image=img, bg='Lightpink')
+label1.image = img
+label1.pack()
 
 def showme():
     high_button.configure(state=NORMAL)

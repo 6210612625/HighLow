@@ -12,6 +12,7 @@ from turtle import left, right
 from PIL import Image, ImageTk
 import time
 import sys
+import tkinter.font as tkFont
 
 
 
@@ -20,7 +21,7 @@ s.setsockopt(SOL_SOCKET,SO_REUSEADDR,1) #`reuse addr ป้องกันerror 
 
 BUFFER_SIZE = 1024
 
-s.bind(('127.0.0.1', 7077)) #การกำหนดค่าต่างๆที่จำเป้นให้กับ socket object
+s.bind(('127.0.0.1', 7017)) #การกำหนดค่าต่างๆที่จำเป้นให้กับ socket object
 s.settimeout(30)
 s.listen(1)
 
@@ -41,7 +42,7 @@ correct = False
 
 def win(player):
     player = str(player)
-    messagebox.showinfo(title="Congratulation server", message='Congratulation winner is player' + player)
+    messagebox.showinfo(title="Congratulation server", message='Congratulation, the winner is player ' + player)
     hideme() 
     restart()
 
@@ -255,18 +256,21 @@ root.configure(bg = "LightPink")
 
 global my_label
 global label_round
-label_round = tk.Label(root, text = "ROUND:    ", bg = "Lightpink", font=('Arial', 13))
+
+fontExample1 = tkFont.Font(family="Impact", size=15)
+
+label_round = tk.Label(root, text = "ROUND:    ", bg = "Lightpink", font=(fontExample1))
 label_round.pack(padx = 20, pady = 20)
 label_round.place(relx = 1.0, rely = 0.0, anchor ='ne')
 
-import tkinter.font as tkFont
-fontExample = tkFont.Font(family="Impact", size=20, weight="bold")
+
+fontExample = tkFont.Font(family="Impact", size=23, weight="bold")
 
 
 """ label = tkinter.Label(root, text = "\n  HIGH-LOW GAME! \n", font=(fontExample), 
             bg = "LightPink", fg = "deep pink").pack()
  """
-label = tkinter.Label(root, text =( "PLAYER 2" ), font=(fontExample), 
+label = tkinter.Label(root, text =( "\nPLAYER 2\n\n" ), font=(fontExample), 
             bg = "LightPink", fg = "black").pack()
 
     
@@ -281,7 +285,7 @@ mylabel.pack(padx = 5, pady = 10) """
 #mybutton = tk.Button(root, text = "Click Me", command = startgame)
 #mybutton.pack(padx = 5, pady = 10)
 #IMG
-dicesImg = Image.open(r"dices1.png").resize((100, 100))
+dicesImg = Image.open(r"dices1.png").resize((500, 500))
 
 #img = PhotoImage(file="dices.png")      
 
@@ -382,7 +386,7 @@ restart_button.pack(
     ipady=5,
     expand=True
 )
-restart_button.place(x=312, y=580)
+restart_button.place(x=262, y=533)
 
 def High():
     global count_high
