@@ -22,20 +22,18 @@ sum_ans = 0
 
 def win(player):
     player = str(player)
-    messagebox.showinfo(title="Congratulation client", message='Congratulation winner is ' + player)
+    messagebox.showinfo(title="Congratulation client", message='Congratulation winner is player' + player)
     restart()
 
 
 def draw():
-    messagebox.showinfo(title="Draw", message='Draw' )
+    messagebox.showinfo(title="Draw client", message='Draw' )
     restart()
 
 
 def lost(player):
     player = str(player)
-    global sum_ans
-    ans = str(sum_ans)
-    messagebox.showinfo(title="Nice Try! client", message='player '+player+' is lost, see you again next time!' + ans)
+    messagebox.showinfo(title="Nice Try! client", message='player '+player+' is lost, see you again next time!' )
     restart()
 
 def send_ans(output):
@@ -62,6 +60,7 @@ def check(sum_ans):
             if sum_ans > 9:
                 if(count_high == True):
                     send_ans("correct")
+                    hideme()
                     messagebox.showinfo(title="Congratulation client", message='correct! answer is '+ ans)
                     
                     correct = True
@@ -74,6 +73,7 @@ def check(sum_ans):
             else:
                 if(count_low == True):
                     send_ans("correct")
+                    hideme()
                     messagebox.showinfo(title="Congratulation client", message='correct! answer is '+ ans)
                     correct = True
                     count_low = False
@@ -84,8 +84,7 @@ def check(sum_ans):
         else:
             send_ans("draw")
             draw()
-        #hideme()
-        send_ans("correct")
+        
         
         #check p1 is uncorrect answer -> lost(player)
         #if rounds = 3 -> draw()
@@ -95,6 +94,8 @@ def handle(type):
         win(player)
     elif(type == 'draw'):
         draw()
+    elif(type == 'restart'):
+        restart()
     elif(type == 'ROUND : 1'):
         rounds = 1
         rnd = str(rounds)
@@ -114,7 +115,7 @@ def handle_ran(ans):
     global sum_ans
     ans = int(ans)
     sum_ans = ans
-    #showme()
+    showme()
     check(sum_ans)
     
     
@@ -127,6 +128,7 @@ def restart():
     label_round.config(text = "ROUND : " + rnd)
     count_high =False
     count_low =False
+    hideme()
 
 
 s = socket(AF_INET,SOCK_STREAM)
@@ -142,6 +144,7 @@ def receive_message():
 def apply(input):
     input = input.decode()
     input = str(input)
+    print("recieve :",input)
     incheck(input)
     
 def incheck(inn):
@@ -165,37 +168,43 @@ receive.start()
  #   s.close()
   #  wind.destroy()
 
+# root window
 root = tk.Tk()
 #root.geometry('420x390')
-root.geometry('1000x1000')
+root.geometry('600x600')
 root.resizable(False, False)
-root.title('HIGH-LOW')
+root.title('HIGH-LOW client side')
 root.configure(bg = "LightPink")
 
 global my_label
 global label_round
-label = tkinter.Label(root, text = "\n\n  HIGH-LOW GAME! \n\n", font=("Arial", 20), 
+label_round = tk.Label(root, text = "ROUND:    ", bg = "Lightpink", font=('Arial', 13))
+label_round.pack(padx = 20, pady = 20)
+label_round.place(relx = 1.0, rely = 0.0, anchor ='ne')
+
+label = tkinter.Label(root, text = "\n  HIGH-LOW GAME! \n", font=("Arial", 20), 
             bg = "LightPink", fg = "deep pink").pack()
 
-label = tkinter.Label(root, text =( "hi" ), font=("Arial", 20), 
+label = tkinter.Label(root, text =( "PLAYER 1" ), font=("Arial", 17), 
             bg = "LightPink", fg = "deep pink").pack()
-
-    
-
-label_round = tk.Label(root, text = "ROUND : 0", bg = "red")
-label_round.pack(padx = 5, pady = 10)
-mylabel = tk.Label(root, text = "Hello World", bg = "red")
-mylabel.pack(padx = 5, pady = 10)
 
 
 
 #IMG
 dicesImg = Image.open(r"dices.png").resize((100, 100))
 
-img = PhotoImage(file="dices.png")      
+#img = PhotoImage(file="dices.png")      
 
-label_img = Label(root, image=img,bg = "LightPink")
-label_img.pack(padx=10,pady=10)
+#label_img = Label(root, image=img,bg = "LightPink")
+#label_img.pack(padx=10,pady=10)
+resize_image = dicesImg.resize((173, 144), Image.ANTIALIAS)
+ 
+img = ImageTk.PhotoImage(resize_image)
+
+label1 = Label(image=img, bg='Lightpink')
+label1.image = img
+label1.pack()
+
 
 def showme():
     high_button.configure(state=NORMAL)
@@ -209,7 +218,7 @@ high_button = ttk.Button(
     root,
     text='HIGH',
     command=lambda: High(),
-    #state=DISABLED
+    state=DISABLED
     
 )
 
@@ -218,7 +227,7 @@ low_button = ttk.Button(
     root,
     text='LOW',
     command=lambda: Low(),
-    #state=DISABLED
+    state=DISABLED
 )
 
 # setting botton

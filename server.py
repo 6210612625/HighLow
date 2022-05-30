@@ -10,11 +10,13 @@ import tkinter as tk
 from tkinter import LEFT, RIGHT, ttk
 from turtle import left, right
 from PIL import Image, ImageTk
-
+import time
 
 
 
 s = socket(AF_INET,SOCK_STREAM)
+s.setsockopt(SOL_SOCKET,SO_REUSEADDR,1) #`reuse addr ป้องกันerror address already in use
+
 BUFFER_SIZE = 1024
 
 s.bind(('127.0.0.1', 7077)) #การกำหนดค่าต่างๆที่จำเป้นให้กับ socket object
@@ -37,18 +39,21 @@ correct = False
 
 def win(player):
     player = str(player)
-    messagebox.showinfo(title="Congratulation server", message='Congratulation winner is ' + player)
+    messagebox.showinfo(title="Congratulation server", message='Congratulation winner is player' + player)
+    hideme() 
     restart()
 
 
 def draw():
-    messagebox.showinfo(title="Draw", message='Draw' )
+    messagebox.showinfo(title="Draw server", message='Draw' )
+    hideme() 
     restart()
 
 
 def lost(player):
     player = str(player)
     messagebox.showinfo(title="Nice Try! server", message='You lost, see you again next time!')
+    hideme() 
     restart()
 
 def check():    
@@ -73,9 +78,10 @@ def check():
                     
                     count_high = False
                 else:
+                    count_low = False
                     send_ans("lost")
                     lost(player)
-                    count_low = False
+                    
             else:
                 if(count_low == True):
                     messagebox.showinfo(title="Congratulation server", message='correct! answer is '+ ans)
@@ -83,14 +89,33 @@ def check():
                     correct = True
                     count_low = False
                 else:
+                    count_high = False
                     send_ans("lost")
                     lost(player)
-                    count_high = False
+                    
                     
                     
         else:
-            send_ans("draw")
-            draw()
+            if sum_ans > 9:
+                if(count_high == True):
+                    send_ans("draw")
+                    draw()
+                    count_high = False
+                else:
+                    count_low = False
+                    send_ans("lost")
+                    lost(player)
+                    
+            else:
+                if(count_low == True):
+                    send_ans("draw")
+                    draw()
+                    count_low = False
+                else:
+                    count_high = False
+                    send_ans("lost")
+                    lost(player)
+            
         
         
 def startgame():
@@ -113,9 +138,11 @@ def startgame():
         label_round.config(text = "ROUND : " + rnd)
     rounds+=1
     start_button.configure(state=DISABLED)
-    #hideme()
-    send_random(sum_ans)
+    hideme()    
     send_round("ROUND : " + rnd)
+    time.sleep(0.5) ##### delay เพื่อไม่ให้ clientได้รับroundกับrandomพร้อมกัน 
+    send_random(sum_ans)
+
     
 def restart():
     global rounds
@@ -126,10 +153,12 @@ def restart():
     label_round.config(text = "ROUND : " + rnd)
     count_high =False
     count_low =False
-    startgame()
+    count_low = False
+    send_ans('restart')
+    #startgame()
     start_button.configure(state=NORMAL)
     #s.close()
-    handle_client()
+    #handle_client()
     
     
      
@@ -138,11 +167,11 @@ def restart():
             
         #check p1 is uncorrect answer -> lost(player)
         #if rounds = 3 -> draw()
-def handle(type):
+def handle(type): #####
     if(type == "lost"):
         win(player)
-    elif(type == 'draw'):
-        draw()
+    #elif(type == 'draw'):
+    #    draw() ##################################################""" 
     elif(type == 'correct'):
         showme()
     else:
@@ -150,6 +179,7 @@ def handle(type):
 
 def send_round(rou):
     rou = str(rou)
+    print("send round :",rou)
     rou = rou.encode()
     conn.send(rou)
     
@@ -173,24 +203,23 @@ def receive_message(c):
         
 def receive_ans(output):
     output = output.decode()
-    print("receive : ",output)
+    print("recieve : ",output)
     output = str(output)
     handle(output)
 
     
 conn = None
 def handle_client():
-    while True:
-        try:        
-            global player
-            global conn
-            player = 1
-            conn, ad = s.accept()
-            print("player connected")
-            receive = Thread(target = receive_message, args = [conn,])
-            receive.start()
-        except: 
-            pass
+   
+    try:        
+        global player
+        global conn
+        conn, ad = s.accept()
+        print("player connected")
+        receive = Thread(target = receive_message, args = [conn,])
+        receive.start()
+    except: 
+        pass
     
 
 
@@ -211,36 +240,48 @@ handle_thread.start()
 # root window
 root = tk.Tk()
 #root.geometry('420x390')
-root.geometry('1000x1000')
+root.geometry('600x600')
 root.resizable(False, False)
 root.title('HIGH-LOW server side')
 root.configure(bg = "LightPink")
 
 global my_label
 global label_round
-label = tkinter.Label(root, text = "\n\n  HIGH-LOW GAME! \n\n", font=("Arial", 20), 
+label_round = tk.Label(root, text = "ROUND:    ", bg = "Lightpink", font=('Arial', 13))
+label_round.pack(padx = 20, pady = 20)
+label_round.place(relx = 1.0, rely = 0.0, anchor ='ne')
+
+label = tkinter.Label(root, text = "\n  HIGH-LOW GAME! \n", font=("Arial", 20), 
             bg = "LightPink", fg = "deep pink").pack()
 
-label = tkinter.Label(root, text =( "hi" ), font=("Arial", 20), 
+label = tkinter.Label(root, text =( "PLAYER 2" ), font=("Arial", 17), 
             bg = "LightPink", fg = "deep pink").pack()
 
     
 
-label_round = tk.Label(root, text = "Hello World", bg = "red")
-label_round.pack(padx = 5, pady = 10)
+#label_round = tk.Label(root, text = "Hello World", bg = "red")
+#label_round.pack(padx = 5, pady = 10)
 mylabel = tk.Label(root, text = "Hello World", bg = "red")
 mylabel.pack(padx = 5, pady = 10)
 
 
-mybutton = tk.Button(root, text = "Click Me", command = startgame)
-mybutton.pack(padx = 5, pady = 10)
+
+#mybutton = tk.Button(root, text = "Click Me", command = startgame)
+#mybutton.pack(padx = 5, pady = 10)
 #IMG
 dicesImg = Image.open(r"dices.png").resize((100, 100))
 
-img = PhotoImage(file="dices.png")      
+#img = PhotoImage(file="dices.png")      
 
-label_img = Label(root, image=img,bg = "LightPink")
-label_img.pack(padx=10,pady=10)
+#label_img = Label(root, image=img,bg = "LightPink")
+#label_img.pack(padx=10,pady=10)
+resize_image = dicesImg.resize((173, 144), Image.ANTIALIAS)
+ 
+img = ImageTk.PhotoImage(resize_image)
+
+label1 = Label(image=img, bg='Lightpink')
+label1.image = img
+label1.pack()
 
 #def เพื่อให้ปุ่มหาย
 def hide_me(event):
@@ -259,7 +300,8 @@ def hideme():
 high_button = ttk.Button(
     root,
     text='HIGH',
-    command=lambda: High()
+    command=lambda: High(),
+    state=DISABLED
     
 )
 
@@ -267,7 +309,8 @@ high_button = ttk.Button(
 low_button = ttk.Button(
     root,
     text='LOW',
-    command=lambda: Low()
+    command=lambda: Low(),
+    state=DISABLED
 )
 
 # setting botton
@@ -276,6 +319,8 @@ high_button.pack(
     ipady=5,
     side=LEFT,
     expand=True,
+  
+
     
 )
 
@@ -283,7 +328,9 @@ low_button.pack(
     ipadx=5,
     ipady=5,
     side=RIGHT,
-    expand=True
+    expand=True,
+
+
 )
 start_button = ttk.Button(
     root,
@@ -310,7 +357,7 @@ restart_button.pack(
     ipady=5,
     expand=True
 )
-restart_button.place(x=110, y=130)
+restart_button.place(x=312, y=580)
 
 def High():
     global count_high
